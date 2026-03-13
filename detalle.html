@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SADE — Detalle Estatal</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,700;1,300&display=swap" rel="stylesheet">
+    <script src="datos.js"></script>
+    <style>
+        /* ── RESET & BASE ── */
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --verde-oscuro: #1a3a2a;
+            --verde:        #2d6a4f;
+            --cafe:         #C1B293;
+            --marino:       #1f2d3d;
+            --gris-tex:     #8a99a8;
+            --gris-bg:      #f4f7f6;
+            --blanco:       #ffffff;
+            --borde:        #dde3e9;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--gris-bg);
+            color: var(--marino);
+            min-height: 100vh;
+        }
+
+        /* ── TOPBAR (igual que mapa) ── */
+        .topbar {
+            background: var(--verde-oscuro);
+            display: flex;
+            align-items: center;
+            padding: 0 32px;
+            height: 56px;
+            gap: 16px;
+        }
+        .topbar img {
+            height: 38px;
+            object-fit: contain;
+        }
+        .topbar-titulo {
+            color: var(--blanco);
+            font-family: 'DM Serif Display', serif;
+            font-size: 1.05rem;
+            flex: 1;
+            text-align: center;
+            letter-spacing: 0.5px;
+        }
+        .topbar-sade {
+            background: var(--gris-bg);
+            text-align: center;
+            padding: 6px 0;
+            letter-spacing: 3px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: var(--verde);
+            text-transform: uppercase;
+        }
+
+        /* ── BREADCRUMB ── */
+        .breadcrumb {
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 18px 24px 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .breadcrumb a {
+            color: var(--verde);
+            text-decoration: none;
+            font-size: 0.82rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: opacity 0.2s;
+        }
+        .breadcrumb a:hover { opacity: 0.7; }
+        .breadcrumb span {
+            color: var(--gris-tex);
+            font-size: 0.82rem;
+        }
+
+        /* ── HERO ── */
+        .hero {
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 24px 24px 0;
+            display: flex;
+            align-items: flex-end;
+            gap: 24px;
+        }
+        .hero-escudo {
+            width: 72px;
+            height: 72px;
+            object-fit: contain;
+            flex-shrink: 0;
+            filter: drop-shadow(0 2px 8px rgba(0,0,0,0.12));
+        }
+        .hero-escudo-placeholder {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--cafe) 0%, var(--verde) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.6rem;
+            color: white;
+            font-family: 'DM Serif Display', serif;
+            flex-shrink: 0;
+        }
+        .hero-texto h1 {
+            font-family: 'DM Serif Display', serif;
+            font-size: 2.4rem;
+            color: var(--marino);
+            line-height: 1.1;
+        }
+        .hero-texto .hero-sub {
+            font-size: 0.8rem;
+            color: var(--gris-tex);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-top: 4px;
+        }
+        .hero-divider {
+            max-width: 960px;
+            margin: 16px auto 0;
+            padding: 0 24px;
+        }
+        .hero-divider hr {
+            border: none;
+            border-top: 1.5px solid var(--borde);
+        }
+
+        /* ── LAYOUT PRINCIPAL ── */
+        .contenido {
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 24px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        /* ── TARJETA GENÉRICA ── */
+        .card {
+            background: var(--blanco);
+            border-radius: 14px;
+            padding: 22px 24px;
+            box-shadow: 0 2px 12px rgba(31,45,61,0.06);
+            animation: fadeUp 0.5s ease both;
+        }
+        .card-full { grid-column: 1 / -1; }
+
+        .card-titulo {
+            font-size: 0.62rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--cafe);
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+
+        /* ── KPIs (fila de 6) ── */
+        .kpis-grid {
+            grid-column: 1 / -1;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+        .kpi-box {
+            background: var(--blanco);
+            border-radius: 12px;
+            padding: 18px 20px;
+            box-shadow: 0 2px 10px rgba(31,45,61,0.06);
+            animation: fadeUp 0.5s ease both;
+            border-left: 3px solid transparent;
+            transition: border-color 0.25s, transform 0.25s;
+        }
+        .kpi-box:hover {
+            border-left-color: var(--cafe);
+            transform: translateY(-2px);
+        }
+        .kpi-label {
+            font-size: 0.6rem;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: var(--gris-tex);
+            margin-bottom: 6px;
+        }
+        .kpi-valor {
+            font-family: 'DM Serif Display', serif;
+            font-size: 1.5rem;
+            color: var(--marino);
+            line-height: 1.1;
+        }
+        .kpi-unidad {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.75rem;
+            color: var(--gris-tex);
+            margin-top: 2px;
+        }
+
+        /* ── LISTAS DE DETALLE ── */
+        .detalle-lista {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .detalle-lista li {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            font-size: 0.88rem;
+            line-height: 1.5;
+            color: var(--marino);
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--borde);
+        }
+        .detalle-lista li:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+        .detalle-lista li::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--cafe);
+            flex-shrink: 0;
+            margin-top: 7px;
+        }
+
+        /* ── BARRA COMPARATIVA (canvas) ── */
+        .grafica-wrap {
+            margin-top: 8px;
+        }
+        canvas.mini-chart {
+            width: 100%;
+            height: 130px;
+            display: block;
+        }
+
+        /* ── BALANZA (exportaciones vs importaciones) ── */
+        .balanza-wrap {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 4px;
+        }
+        .balanza-row {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .balanza-etiqueta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.78rem;
+        }
+        .balanza-etiqueta span:first-child { color: var(--gris-tex); }
+        .balanza-etiqueta span:last-child  { font-weight: 600; color: var(--marino); }
+        .balanza-track {
+            height: 10px;
+            background: var(--gris-bg);
+            border-radius: 99px;
+            overflow: hidden;
+        }
+        .balanza-fill {
+            height: 100%;
+            border-radius: 99px;
+            transition: width 0.8s cubic-bezier(0.4,0,0.2,1);
+        }
+        .balanza-fill.exporta { background: var(--verde); }
+        .balanza-fill.importa { background: var(--cafe); }
+
+        /* ── GASTO VS RECAUDACIÓN ── */
+        .fiscal-wrap {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 4px;
+        }
+        .fiscal-row {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .fiscal-etiqueta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.78rem;
+        }
+        .fiscal-etiqueta span:first-child { color: var(--gris-tex); }
+        .fiscal-etiqueta span:last-child  { font-weight: 600; color: var(--marino); }
+        .fiscal-track {
+            height: 10px;
+            background: var(--gris-bg);
+            border-radius: 99px;
+            overflow: hidden;
+        }
+        .fiscal-fill {
+            height: 100%;
+            border-radius: 99px;
+            transition: width 0.8s cubic-bezier(0.4,0,0.2,1) 0.2s;
+        }
+        .fiscal-fill.recauda { background: var(--marino); }
+        .fiscal-fill.gasta   { background: var(--gris-tex); }
+
+        /* ── GAUGE (desempleo) ── */
+        .gauge-wrap {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 0;
+        }
+        canvas.gauge-canvas {
+            width: 180px;
+            height: 95px;
+            display: block;
+        }
+        .gauge-valor {
+            font-family: 'DM Serif Display', serif;
+            font-size: 2rem;
+            color: var(--marino);
+            margin-top: -8px;
+        }
+        .gauge-label {
+            font-size: 0.72rem;
+            color: var(--gris-tex);
+            text-align: center;
+        }
+
+        /* ── BOTÓN VOLVER ── */
+        .btn-volver {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--verde-oscuro);
+            color: var(--blanco);
+            border: none;
+            border-radius: 99px;
+            padding: 10px 24px;
+            font-size: 0.85rem;
+            font-family: 'DM Sans', sans-serif;
+            cursor: pointer;
+            text-decoration: none;
+            transition: background 0.25s;
+        }
+        .btn-volver:hover { background: var(--verde); }
+
+        /* ── ERROR ── */
+        .estado-error {
+            max-width: 960px;
+            margin: 60px auto;
+            text-align: center;
+            padding: 24px;
+        }
+        .estado-error h2 { font-size: 1.6rem; color: var(--marino); margin-bottom: 12px; }
+        .estado-error p  { color: var(--gris-tex); margin-bottom: 24px; }
+
+        /* ── ANIMACIONES ── */
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(14px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        .card:nth-child(1) { animation-delay: 0.05s; }
+        .card:nth-child(2) { animation-delay: 0.1s;  }
+        .card:nth-child(3) { animation-delay: 0.15s; }
+        .card:nth-child(4) { animation-delay: 0.2s;  }
+        .kpi-box:nth-child(1){ animation-delay: 0.05s; }
+        .kpi-box:nth-child(2){ animation-delay: 0.1s;  }
+        .kpi-box:nth-child(3){ animation-delay: 0.15s; }
+        .kpi-box:nth-child(4){ animation-delay: 0.2s;  }
+        .kpi-box:nth-child(5){ animation-delay: 0.25s; }
+        .kpi-box:nth-child(6){ animation-delay: 0.3s;  }
+
+        /* ── FOOTER ── */
+        .footer-detalle {
+            max-width: 960px;
+            margin: 8px auto 32px;
+            padding: 0 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .footer-nota {
+            font-size: 0.72rem;
+            color: var(--gris-tex);
+        }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width: 640px) {
+            .contenido { grid-template-columns: 1fr; }
+            .kpis-grid  { grid-template-columns: repeat(2, 1fr); }
+            .hero-texto h1 { font-size: 1.8rem; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+    <img src="imagenes/logo_cefp.jpeg" alt="CEFP" onerror="this.style.display='none'">
+    <div class="topbar-titulo">Centro de Estudios de las Finanzas Públicas</div>
+</div>
+<div class="topbar-sade">S A D E</div>
+
+<!-- CONTENIDO DINÁMICO -->
+<div id="app"></div>
+
+<script>
+(function () {
+    // ── Leer parámetro de URL ──────────────────────────────────────────
+    const params   = new URLSearchParams(window.location.search);
+    const idEstado = params.get('estado') || '';
+    const data     = DATABASE_SADE[idEstado];
+    const app      = document.getElementById('app');
+
+    if (!data) {
+        app.innerHTML = `
+            <div class="estado-error">
+                <h2>Estado no encontrado</h2>
+                <p>No se encontró información para el código "<strong>${idEstado}</strong>".</p>
+                <a href="mapa_sade.html" class="btn-volver">← Volver al mapa</a>
+            </div>`;
+        return;
+    }
+
+    // ── Actualizar título de pestaña ──────────────────────────────────
+    document.title = `SADE — ${data.nombre}`;
+
+    // ── Parsear números ───────────────────────────────────────────────
+    const n = (str) => parseFloat((str || '0').replace(/[^0-9.]/g, '')) || 0;
+
+    const expo  = n(data.resumen.exportaciones);
+    const impo  = n(data.resumen.importaciones);
+    const recau = n(data.resumen.recaudacion);
+    const gasto = n(data.resumen.gasto);
+    const desemp = parseFloat(data.resumen.desempleo) || 0;
+    const maxComercio = Math.max(expo, impo, 1);
+    const maxFiscal   = Math.max(recau, gasto, 1);
+
+    // ── Inicial para el placeholder ──────────────────────────────────
+    const inicial = data.nombre.charAt(0).toUpperCase();
+
+    // ── Renderizar HTML ──────────────────────────────────────────────
+    app.innerHTML = `
+        <!-- Breadcrumb -->
+        <div class="breadcrumb">
+            <a href="mapa_sade.html">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M15 18l-6-6 6-6"/>
+                </svg>
+                Mapa nacional
+            </a>
+            <span>›</span>
+            <span>${data.nombre}</span>
+        </div>
+
+        <!-- Hero -->
+        <div class="hero">
+            <img class="hero-escudo" src="${data.imagen}"
+                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+                 alt="Escudo ${data.nombre}">
+            <div class="hero-escudo-placeholder" style="display:none">${inicial}</div>
+            <div class="hero-texto">
+                <div class="hero-sub">Perfil estatal · SADE</div>
+                <h1>${data.nombre}</h1>
+            </div>
+        </div>
+        <div class="hero-divider"><hr></div>
+
+        <!-- KPIs -->
+        <div class="kpis-grid contenido" style="padding-bottom:0">
+            ${[
+                { label: 'Población',      valor: data.resumen.poblacion,    unidad: 'habitantes' },
+                { label: 'Desempleo',      valor: data.resumen.desempleo,    unidad: 'tasa de desocupación' },
+                { label: 'Exportaciones',  valor: data.resumen.exportaciones,unidad: '' },
+                { label: 'Importaciones',  valor: data.resumen.importaciones,unidad: '' },
+                { label: 'Recaudación',    valor: data.resumen.recaudacion,  unidad: '' },
+                { label: 'Gasto público',  valor: data.resumen.gasto,        unidad: '' }
+            ].map(k => `
+                <div class="kpi-box">
+                    <div class="kpi-label">${k.label}</div>
+                    <div class="kpi-valor">${k.valor}</div>
+                    ${k.unidad ? `<div class="kpi-unidad">${k.unidad}</div>` : ''}
+                </div>`).join('')}
+        </div>
+
+        <!-- Grid de secciones -->
+        <div class="contenido" style="padding-top:12px">
+
+            <!-- Demografía -->
+            <div class="card">
+                <div class="card-titulo">Demografía</div>
+                <ul class="detalle-lista">
+                    ${(data.detalles.demografia || []).map(i => `<li>${i}</li>`).join('')}
+                </ul>
+            </div>
+
+            <!-- Economía -->
+            <div class="card">
+                <div class="card-titulo">Contexto económico</div>
+                <ul class="detalle-lista">
+                    ${(data.detalles.economia || []).map(i => `<li>${i}</li>`).join('')}
+                </ul>
+            </div>
+
+            <!-- Balanza comercial -->
+            <div class="card">
+                <div class="card-titulo">Balanza comercial</div>
+                <div class="balanza-wrap">
+                    <div class="balanza-row">
+                        <div class="balanza-etiqueta">
+                            <span>Exportaciones</span>
+                            <span>${data.resumen.exportaciones}</span>
+                        </div>
+                        <div class="balanza-track">
+                            <div class="balanza-fill exporta" id="bar-expo" style="width:0%"></div>
+                        </div>
+                    </div>
+                    <div class="balanza-row">
+                        <div class="balanza-etiqueta">
+                            <span>Importaciones</span>
+                            <span>${data.resumen.importaciones}</span>
+                        </div>
+                        <div class="balanza-track">
+                            <div class="balanza-fill importa" id="bar-impo" style="width:0%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Desempleo gauge -->
+            <div class="card">
+                <div class="card-titulo">Tasa de desempleo</div>
+                <div class="gauge-wrap">
+                    <canvas id="gauge-canvas" class="gauge-canvas" width="360" height="190"></canvas>
+                    <div class="gauge-valor">${data.resumen.desempleo}</div>
+                    <div class="gauge-label">Tasa de desocupación abierta</div>
+                </div>
+            </div>
+
+            <!-- Recaudación detalle -->
+            <div class="card">
+                <div class="card-titulo">Ingresos públicos</div>
+                <ul class="detalle-lista">
+                    ${(data.detalles.recaudacion || []).map(i => `<li>${i}</li>`).join('')}
+                </ul>
+                <div class="fiscal-wrap" style="margin-top:18px">
+                    <div class="card-titulo" style="margin-bottom:8px">Recaudación vs Gasto</div>
+                    <div class="fiscal-row">
+                        <div class="fiscal-etiqueta">
+                            <span>Recaudación</span><span>${data.resumen.recaudacion}</span>
+                        </div>
+                        <div class="fiscal-track">
+                            <div class="fiscal-fill recauda" id="bar-recau" style="width:0%"></div>
+                        </div>
+                    </div>
+                    <div class="fiscal-row">
+                        <div class="fiscal-etiqueta">
+                            <span>Gasto</span><span>${data.resumen.gasto}</span>
+                        </div>
+                        <div class="fiscal-track">
+                            <div class="fiscal-fill gasta" id="bar-gasto" style="width:0%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Gasto detalle -->
+            <div class="card">
+                <div class="card-titulo">Destino del gasto</div>
+                <ul class="detalle-lista">
+                    ${(data.detalles.gasto || []).map(i => `<li>${i}</li>`).join('')}
+                </ul>
+            </div>
+
+        </div>
+
+        <!-- Footer -->
+        <div class="footer-detalle">
+            <a href="mapa_sade.html" class="btn-volver">← Volver al mapa</a>
+            <span class="footer-nota">Fuente: CEFP · Sistema de Análisis de Datos Estatales (SADE)</span>
+        </div>
+    `;
+
+    // ── Animar barras (después del render) ───────────────────────────
+    requestAnimationFrame(() => {
+        setTimeout(() => {
+            const pExpo  = Math.min((expo  / maxComercio) * 100, 100);
+            const pImpo  = Math.min((impo  / maxComercio) * 100, 100);
+            const pRecau = Math.min((recau / maxFiscal)   * 100, 100);
+            const pGasto = Math.min((gasto / maxFiscal)   * 100, 100);
+
+            document.getElementById('bar-expo').style.width  = pExpo  + '%';
+            document.getElementById('bar-impo').style.width  = pImpo  + '%';
+            document.getElementById('bar-recau').style.width = pRecau + '%';
+            document.getElementById('bar-gasto').style.width = pGasto + '%';
+        }, 100);
+    });
+
+    // ── Gauge de desempleo ────────────────────────────────────────────
+    setTimeout(() => {
+        const canvas = document.getElementById('gauge-canvas');
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        const W = canvas.width, H = canvas.height;
+        const cx = W / 2, cy = H - 14;
+        const r = Math.min(W, H * 2) * 0.38;
+
+        // Fondo arco
+        ctx.beginPath();
+        ctx.arc(cx, cy, r, Math.PI, 0);
+        ctx.lineWidth = 18;
+        ctx.strokeStyle = '#dde3e9';
+        ctx.lineCap = 'round';
+        ctx.stroke();
+
+        // Arco coloreado
+        const pct = Math.min(desemp / 8, 1);
+        const startAngle = Math.PI;
+        const endAngle   = Math.PI + (Math.PI * pct);
+
+        // Color dinámico: verde → cafe → gris según nivel
+        const color = pct < 0.4 ? '#2d6a4f' : pct < 0.7 ? '#C1B293' : '#8a99a8';
+
+        ctx.beginPath();
+        ctx.arc(cx, cy, r, startAngle, endAngle);
+        ctx.lineWidth = 18;
+        ctx.strokeStyle = color;
+        ctx.lineCap = 'round';
+        ctx.stroke();
+
+        // Escala
+        ['0%', '2%', '4%', '6%', '8%'].forEach((label, i) => {
+            const angle = Math.PI + (Math.PI * i / 4);
+            const tx = cx + (r + 20) * Math.cos(angle);
+            const ty = cy + (r + 20) * Math.sin(angle);
+            ctx.fillStyle = '#8a99a8';
+            ctx.font = '13px DM Sans, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(label, tx, ty);
+        });
+    }, 150);
+
+})();
+</script>
+</body>
+</html>
