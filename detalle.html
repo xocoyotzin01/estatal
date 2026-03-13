@@ -220,7 +220,7 @@
     var app = document.getElementById('app');
 
     if (!D) {
-        app.innerHTML = '<div class="estado-error"><h2>Estado no encontrado</h2><p>Código: <strong>' + id + '</strong></p><a href="index.html" class="btn-volver">← Volver al mapa</a></div>';
+        app.innerHTML = '<div class="estado-error"><h2>Estado no encontrado</h2><p>Código: <strong>' + id + '</strong></p><a href="mapa_sade.html" class="btn-volver">← Volver al mapa</a></div>';
         return;
     }
 
@@ -281,7 +281,7 @@
 
     // ── Render del HTML base
     app.innerHTML =
-    '<div class="breadcrumb"><a href="index.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>Mapa nacional</a><span>›</span><span>'+D.nombre+'</span></div>' +
+    '<div class="breadcrumb"><a href="mapa_sade.html"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>Mapa nacional</a><span>›</span><span>'+D.nombre+'</span></div>' +
 
     '<div class="hero">' +
     '<div class="hero-escudo-wrap">'+
@@ -362,7 +362,7 @@
     '<div class="card"><div class="card-titulo">Destino del gasto</div><ul class="detalle-lista">' + (D.detalles.gasto||[]).map(function(i){return'<li>'+i+'</li>';}).join('') + '</ul></div>' +
     '</div>' +
 
-    '<div class="footer-detalle"><a href="index.html" class="btn-volver">← Volver al mapa</a><span class="footer-nota">CEFP · Sistema de Análisis de Datos Estatales (SADE)</span></div>';
+    '<div class="footer-detalle"><a href="mapa_sade.html" class="btn-volver">← Volver al mapa</a><span class="footer-nota">CEFP · Sistema de Análisis de Datos Estatales (SADE)</span></div>';
 
     // ── HELPERS HTML
     function kpiBox(clave, label, valor, unidad, delay) {
