@@ -299,43 +299,7 @@
     '</div>' +
     '<div class="hero-divider"><hr></div>' +
 
-    // KPIs
-    '<div class="kpis-grid">' +
-    kpiBox('poblacion',     'Población',     D.resumen.poblacion,    'habitantes',       '0.05s') +
-    kpiBox('desempleo',     'Desempleo',     D.resumen.desempleo,    'tasa desocupación','0.1s')  +
-    kpiBox('exportaciones', 'Exportaciones', D.resumen.exportaciones,'',                 '0.15s') +
-    kpiBox('importaciones', 'Importaciones', D.resumen.importaciones,'',                 '0.2s')  +
-    kpiBox('recaudacion',   'Recaudación',   D.resumen.recaudacion,  '',                 '0.25s') +
-    kpiBox('gasto',         'Gasto público', D.resumen.gasto,        '',                 '0.3s')  +
-    '</div>' +
-
-    // Panel histórico (inicia cerrado)
-    '<div class="panel-historico" id="panel-hist">' +
-    '<div class="panel-inner">' +
-    '<div class="ph-header">' +
-    '<div><div class="ph-titulo" id="ph-titulo">—</div><div class="ph-subtitulo" id="ph-subtitulo">Serie histórica</div></div>' +
-    '<button class="btn-cerrar" id="btn-cerrar" title="Cerrar">✕</button>' +
-    '</div>' +
-    '<div class="ph-controles">' +
-    '<span class="ph-ctrl-label">Años:</span>' +
-    '<div class="años-chips" id="chips-años">' +
-    AÑOS.map(function(a){ return '<button class="chip-año on" data-año="'+a+'">'+a+'</button>'; }).join('') +
-    '</div>' +
-    '<button class="btn-todos" id="btn-todos">Seleccionar todos</button>' +
-    '<div class="vista-chips">' +
-    '<button class="chip-vista on" data-v="grafica">Gráfica</button>' +
-    '<button class="chip-vista" data-v="tabla">Tabla</button>' +
-    '</div>' +
-    '</div>' +
-    '<div class="ph-body">' +
-    '<div class="stat-pills" id="stat-pills"></div>' +
-    '<div id="hist-chart-wrap"><canvas id="hist-chart" height="180"></canvas></div>' +
-    '<div class="hist-tabla-wrap" id="hist-tabla-wrap" style="display:none"></div>' +
-    '</div>' +
-    '</div>' +
-    '</div>' +
-
-    // Cards de contenido
+    // ── ARRIBA: Cards de detalle (Demografía, Balanza, Gauge, Ingresos, Gasto)
     '<div class="contenido">' +
     '<div class="card"><div class="card-titulo">Demografía</div><ul class="detalle-lista">' + (D.detalles.demografia||[]).map(function(i){return'<li>'+i+'</li>';}).join('') + '</ul></div>' +
     '<div class="card"><div class="card-titulo">Contexto económico</div><ul class="detalle-lista">' + (D.detalles.economia||[]).map(function(i){return'<li>'+i+'</li>';}).join('') + '</ul></div>' +
@@ -360,6 +324,46 @@
     '</div></div>' +
 
     '<div class="card"><div class="card-titulo">Destino del gasto</div><ul class="detalle-lista">' + (D.detalles.gasto||[]).map(function(i){return'<li>'+i+'</li>';}).join('') + '</ul></div>' +
+    '</div>' +
+
+    // ── ABAJO: Indicadores con serie histórica (click → despliega gráfica)
+    '<div style="max-width:960px;margin:0 auto;padding:0 24px 8px">' +
+    '<div style="font-size:.62rem;letter-spacing:2px;text-transform:uppercase;color:var(--ca);font-weight:700;padding:20px 0 10px">' +
+    'Indicadores — haz click para ver la serie histórica</div>' +
+    '</div>' +
+    '<div class="kpis-grid">' +
+    kpiBox('poblacion',     'Población',     D.resumen.poblacion,    'habitantes',       '0.05s') +
+    kpiBox('desempleo',     'Desempleo',     D.resumen.desempleo,    'tasa desocupación','0.1s')  +
+    kpiBox('exportaciones', 'Exportaciones', D.resumen.exportaciones,'',                 '0.15s') +
+    kpiBox('importaciones', 'Importaciones', D.resumen.importaciones,'',                 '0.2s')  +
+    kpiBox('recaudacion',   'Recaudación',   D.resumen.recaudacion,  '',                 '0.25s') +
+    kpiBox('gasto',         'Gasto público', D.resumen.gasto,        '',                 '0.3s')  +
+    '</div>' +
+
+    // ── Panel histórico desplegable — aparece justo debajo del KPI clickeado
+    '<div class="panel-historico" id="panel-hist">' +
+    '<div class="panel-inner">' +
+    '<div class="ph-header">' +
+    '<div><div class="ph-titulo" id="ph-titulo">—</div><div class="ph-subtitulo" id="ph-subtitulo">Serie histórica</div></div>' +
+    '<button class="btn-cerrar" id="btn-cerrar" title="Cerrar">✕</button>' +
+    '</div>' +
+    '<div class="ph-controles">' +
+    '<span class="ph-ctrl-label">Años:</span>' +
+    '<div class="años-chips" id="chips-años">' +
+    AÑOS.map(function(a){ return '<button class="chip-año on" data-año="'+a+'">'+a+'</button>'; }).join('') +
+    '</div>' +
+    '<button class="btn-todos" id="btn-todos">Seleccionar todos</button>' +
+    '<div class="vista-chips">' +
+    '<button class="chip-vista on" data-v="grafica">Gráfica</button>' +
+    '<button class="chip-vista" data-v="tabla">Tabla</button>' +
+    '</div>' +
+    '</div>' +
+    '<div class="ph-body">' +
+    '<div class="stat-pills" id="stat-pills"></div>' +
+    '<div id="hist-chart-wrap"><canvas id="hist-chart" height="180"></canvas></div>' +
+    '<div class="hist-tabla-wrap" id="hist-tabla-wrap" style="display:none"></div>' +
+    '</div>' +
+    '</div>' +
     '</div>' +
 
     '<div class="footer-detalle"><a href="index.html" class="btn-volver">← Volver al mapa</a><span class="footer-nota">CEFP · Sistema de Análisis de Datos Estatales (SADE)</span></div>';
