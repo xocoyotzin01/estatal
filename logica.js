@@ -44,7 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 parseFloat(info.resumen.exportaciones.replace(/[^0-9.]/g,'')),
                 parseFloat(info.resumen.importaciones.replace(/[^0-9.]/g,''))
             ],
-            colores: ['#C1B293', '#2d6a4f']
+            colores: ['#C1B293', '#8a99a8']
         }),
         // 3: Importaciones — misma gráfica de balanza
         (info) => ({
@@ -55,7 +55,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 parseFloat(info.resumen.exportaciones.replace(/[^0-9.]/g,'')),
                 parseFloat(info.resumen.importaciones.replace(/[^0-9.]/g,''))
             ],
-            colores: ['#C1B293', '#2d6a4f']
+            colores: ['#C1B293', '#8a99a8']
         }),
         // 4: Recaudación — donut recaudación vs gasto
         (info) => ({
@@ -66,7 +66,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 parseFloat(info.resumen.recaudacion.replace(/[^0-9.]/g,'')),
                 parseFloat(info.resumen.gasto.replace(/[^0-9.]/g,''))
             ],
-            colores: ['#C1B293', '#2d6a4f']
+            colores: ['#2d6a4f', '#8a99a8']
         }),
         // 5: Gasto — mismo
         (info) => ({
@@ -77,7 +77,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 parseFloat(info.resumen.recaudacion.replace(/[^0-9.]/g,'')),
                 parseFloat(info.resumen.gasto.replace(/[^0-9.]/g,''))
             ],
-            colores: ['#C1B293', '#2d6a4f']
+            colores: ['#2d6a4f', '#8a99a8']
         })
     ];
 
@@ -112,23 +112,42 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         if (cfg.tipo === 'barrasH') {
-            const padL = 80, padR = 10, barH = 22, gap = 14;
-            const max = Math.max(...cfg.valores);
+            const padL = 4, padR = 4;
+            const lblH = 13;   // altura reservada para etiqueta
+            const barH = 28;   // altura de la barra
+            const gap  = 8;    // separación entre grupos
+            const max  = Math.max(...cfg.valores);
+            // Canvas se auto-ajusta exactamente al contenido
+            const totalH = cfg.labels.length * (lblH + barH + gap) - gap + 4;
+            canvas.height = totalH;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
             cfg.valores.forEach((v, i) => {
-                const y = 16 + i * (barH + gap);
-                const w = ((v / max) * (canvas.width - padL - padR));
+                const groupY = i * (lblH + barH + gap);
+                const availW = canvas.width - padL - padR;
+                const w = Math.max(6, (v / max) * availW);
+                // Etiqueta encima de la barra
+                ctx.fillStyle = '#8a99a8';
+                ctx.font = '10px sans-serif';
+                ctx.textAlign = 'left';
+                ctx.fillText(cfg.labels[i], padL, groupY + lblH - 2);
+                // Barra
                 ctx.fillStyle = cfg.colores ? cfg.colores[i] : cfg.color;
                 ctx.beginPath();
-                ctx.roundRect(padL, y, w, barH, 4);
+                ctx.roundRect(padL, groupY + lblH, w, barH, 3);
                 ctx.fill();
-                ctx.fillStyle = '#4a5568';
-                ctx.font = '9px sans-serif';
-                ctx.textAlign = 'right';
-                ctx.fillText(cfg.labels[i], padL - 4, y + barH/2 + 3);
-                ctx.fillStyle = '#8a99a8';
-                ctx.font = '8px sans-serif';
-                ctx.textAlign = 'left';
-                ctx.fillText(v.toLocaleString(), padL + w + 4, y + barH/2 + 3);
+                // Valor dentro (blanco) o fuera (gris) si no cabe
+                const valStr = v.toLocaleString('es-MX');
+                ctx.font = 'bold 11px sans-serif';
+                const txtW = ctx.measureText(valStr).width;
+                if (w > txtW + 12) {
+                    ctx.fillStyle = '#fff';
+                    ctx.textAlign = 'right';
+                    ctx.fillText(valStr, padL + w - 6, groupY + lblH + barH/2 + 4);
+                } else {
+                    ctx.fillStyle = '#4a5568';
+                    ctx.textAlign = 'left';
+                    ctx.fillText(valStr, padL + w + 5, groupY + lblH + barH/2 + 4);
+                }
             });
         }
 
