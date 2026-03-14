@@ -32,11 +32,12 @@
         .breadcrumb span { color:var(--gt); font-size:.82rem; }
 
         /* HERO */
-        .hero { max-width:960px; margin:0 auto; padding:24px 24px 0; display:flex; align-items:flex-end; gap:24px; }
-        .hero-escudo-wrap { width:68px; height:68px; flex-shrink:0; display:flex; align-items:center; justify-content:center; }
-        .hero-escudo-img { width:68px; height:68px; object-fit:contain; filter:drop-shadow(0 2px 6px rgba(0,0,0,.15)); }
-        .hero-escudo-fallback { width:68px; height:68px; border-radius:50%; background:linear-gradient(135deg,var(--ca),var(--ve)); display:none; align-items:center; justify-content:center; font-family:'DM Serif Display',serif; font-size:1.7rem; color:#fff; box-shadow:0 4px 16px rgba(45,106,79,.25); }
-        .hero-silueta { flex-shrink:0; opacity:.18; }
+        .hero { max-width:960px; margin:0 auto; padding:24px 24px 0; display:flex; align-items:center; gap:0; position:relative; min-height:140px; }
+        .hero-escudo-wrap { width:136px; height:136px; flex-shrink:0; display:flex; align-items:center; justify-content:center; z-index:2; }
+        .hero-escudo-img { width:136px; height:136px; object-fit:contain; filter:drop-shadow(0 2px 6px rgba(0,0,0,.15)); }
+        .hero-escudo-fallback { width:136px; height:136px; border-radius:50%; background:linear-gradient(135deg,var(--ca),var(--ve)); display:none; align-items:center; justify-content:center; font-family:'DM Serif Display',serif; font-size:1.7rem; color:#fff; box-shadow:0 4px 16px rgba(45,106,79,.25); }
+        .hero-centro { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; z-index:2; }
+        .hero-silueta { flex-shrink:0; opacity:.15; z-index:1; display:flex; align-items:center; justify-content:flex-end; width:220px; }
         .hero-silueta svg { display:block; }
         .hero-texto h1 { font-family:'DM Serif Display',serif; font-size:2.4rem; color:var(--ma); line-height:1.1; }
         .hero-sub { font-size:.8rem; color:var(--gt); letter-spacing:2px; text-transform:uppercase; margin-top:4px; }
@@ -289,13 +290,11 @@
            'onerror="this.style.display=\'none\';document.getElementById(\'hfb\').style.display=\'flex\'">' +
       '<div class="hero-escudo-fallback" id="hfb">'+ini+'</div>'+
     '</div>' +
-    '<div class="hero-texto" style="flex:1;position:relative">' +
+    '<div class="hero-centro">' +
       '<div class="hero-sub">Perfil estatal · SADE</div>' +
-      '<div style="display:flex;align-items:center;gap:16px">'+
-        '<h1>'+D.nombre+'</h1>'+
-        '<div class="hero-silueta" id="hero-silueta"></div>'+
-      '</div>'+
+      '<h1>'+D.nombre+'</h1>'+
     '</div>' +
+    '<div class="hero-silueta" id="hero-silueta"></div>' +
     '</div>' +
     '<div class="hero-divider"><hr></div>' +
 
@@ -391,13 +390,45 @@
         var cv = document.getElementById('gauge-canvas'); if(!cv)return;
         var ctx = cv.getContext('2d');
         var W=cv.width,H=cv.height,cx=W/2,cy=H-14,r=Math.min(W,H*2)*.38;
+        var PROMEDIO_NACIONAL = 3.4;  // promedio de los 32 estados
+
+        // Track fondo
         ctx.beginPath();ctx.arc(cx,cy,r,Math.PI,0);ctx.lineWidth=18;ctx.strokeStyle='#dde3e9';ctx.lineCap='round';ctx.stroke();
+
+        // Arco del estado
         var p=Math.min(des/8,1),col=p<.4?'#2d6a4f':p<.7?'#C1B293':'#8a99a8';
         ctx.beginPath();ctx.arc(cx,cy,r,Math.PI,Math.PI+Math.PI*p);ctx.lineWidth=18;ctx.strokeStyle=col;ctx.lineCap='round';ctx.stroke();
+
+        // Marcador del promedio nacional (línea radial más gruesa)
+        var pNac=Math.min(PROMEDIO_NACIONAL/8,1);
+        var angNac=Math.PI+Math.PI*pNac;
+        ctx.save();
+        // Línea del marcador — más larga y gruesa
+        ctx.strokeStyle='#1f2d3d'; ctx.lineWidth=4; ctx.lineCap='round';
+        ctx.beginPath();
+        ctx.moveTo(cx+(r-16)*Math.cos(angNac), cy+(r-16)*Math.sin(angNac));
+        ctx.lineTo(cx+(r+14)*Math.cos(angNac), cy+(r+14)*Math.sin(angNac));
+        ctx.stroke();
+        // Pastilla de fondo para la etiqueta
+        var lx=cx+(r+38)*Math.cos(angNac), ly=cy+(r+38)*Math.sin(angNac);
+        var tag='Nac. '+PROMEDIO_NACIONAL+'%';
+        ctx.font='bold 13px DM Sans,sans-serif';
+        var tw=ctx.measureText(tag).width;
+        ctx.fillStyle='#1f2d3d';
+        ctx.beginPath();
+        ctx.roundRect(lx-tw/2-6, ly-10, tw+12, 20, 4);
+        ctx.fill();
+        ctx.fillStyle='#ffffff';
+        ctx.textAlign='center'; ctx.textBaseline='middle';
+        ctx.fillText(tag, lx, ly);
+        ctx.restore();
+
+        // Marcas de escala
         ['0%','2%','4%','6%','8%'].forEach(function(lbl,i){
             var ang=Math.PI+Math.PI*i/4;
-            ctx.fillStyle='#8a99a8';ctx.font='13px DM Sans,sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';
-            ctx.fillText(lbl,cx+(r+20)*Math.cos(ang),cy+(r+20)*Math.sin(ang));
+            ctx.fillStyle='#8a99a8'; ctx.font='bold 14px DM Sans,sans-serif';
+            ctx.textAlign='center'; ctx.textBaseline='middle';
+            ctx.fillText(lbl, cx+(r+24)*Math.cos(ang), cy+(r+24)*Math.sin(ang));
         });
     },150);
 
@@ -435,9 +466,9 @@
 
         // Altura fija 72px, ancho proporcional
         var ratio = (bb.width+pad*2) / (bb.height+pad*2);
-        var svgH = 72, svgW = Math.round(svgH * ratio);
+        var svgH = 216, svgW = Math.round(svgH * ratio);
         // Cap para estados muy anchos o muy angostos
-        svgW = Math.max(40, Math.min(svgW, 120));
+        svgW = Math.max(120, Math.min(svgW, 360));
 
         var svgEl = document.createElementNS('http://www.w3.org/2000/svg','svg');
         svgEl.setAttribute('viewBox', vb);
